@@ -1,0 +1,2 @@
+function PrecursorCard({name,code}){return <div className="precursor-card"><span className="precursor-icon">{code}</span><div><strong>{name}</strong><span>Transparent prototype rule match</span></div></div>}
+export default PrecursorCard

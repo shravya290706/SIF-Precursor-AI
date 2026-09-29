@@ -1,0 +1,6 @@
+import {Bar,BarChart,CartesianGrid,Cell,Pie,PieChart,ResponsiveContainer,Tooltip,XAxis,YAxis} from 'recharts'
+const colors={sif:'#f18b42',not:'#2fa89d'}
+function ChartShell({children}){return <div className="chart-wrap">{children}</div>}
+export function PredictionChart({data}){return <ChartShell><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={data} dataKey="value" nameKey="name" innerRadius={62} outerRadius={90} paddingAngle={3}><Cell fill={colors.sif}/><Cell fill={colors.not}/></Pie><Tooltip formatter={(value)=>[`${value} reports`,'Count']}/></PieChart></ResponsiveContainer></ChartShell>}
+export function BarDistribution({data,color='#2fa89d'}){return <ChartShell><ResponsiveContainer width="100%" height="100%"><BarChart data={data} margin={{top:8,right:8,left:-20,bottom:5}}><CartesianGrid stroke="#e3e8e2" vertical={false}/><XAxis dataKey="name" tick={{fontSize:10,fill:'#728087'}} axisLine={false} tickLine={false}/><YAxis allowDecimals={false} tick={{fontSize:10,fill:'#728087'}} axisLine={false} tickLine={false}/><Tooltip cursor={{fill:'#f0f3ed'}}/><Bar dataKey="value" fill={color} radius={[2,2,0,0]}/></BarChart></ResponsiveContainer></ChartShell>}
+export function ProbabilityChart({data}){return <BarDistribution data={data} color={colors.sif}/>}

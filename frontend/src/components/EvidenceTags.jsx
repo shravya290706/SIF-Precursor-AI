@@ -1,0 +1,2 @@
+function EvidenceTags({evidence=[]}){if(!evidence.length)return <p className="empty-evidence">No coefficient evidence returned for this narrative.</p>;return <div className="evidence-list" aria-label="Evidence terms found in the submitted narrative">{evidence.map((item,index)=><span className="evidence-tag" key={`${item.term}-${index}`}>{item.term}<small>{Number(item.weight).toFixed(2)}</small></span>)}</div>}
+export default EvidenceTags
