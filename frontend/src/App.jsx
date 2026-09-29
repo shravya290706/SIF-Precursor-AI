@@ -4,12 +4,14 @@ import Dashboard from './pages/Dashboard'
 import AnalyzeReport from './pages/AnalyzeReport'
 import BulkAnalysis from './pages/BulkAnalysis'
 import Analytics from './pages/Analytics'
+import LifeSavingRules from './pages/LifeSavingRules'
 
 const navigation = [
   { label: 'Dashboard', key: 'dashboard', index: '01' },
   { label: 'Analyze Report', key: 'analyze', index: '02' },
   { label: 'Bulk Analysis', key: 'bulk', index: '03' },
   { label: 'Analytics', key: 'analytics', index: '04' },
+  { label: 'Life-Saving Rules', key: 'rules', index: '05' },
 ]
 
 function App() {
@@ -18,10 +20,11 @@ function App() {
   const [lastAnalysis, setLastAnalysis] = useState(null)
   const navigate = (page) => setActivePage(page)
   const page = {
-    dashboard: <Dashboard onNavigate={navigate} lastAnalysis={lastAnalysis} />,
+    dashboard: <Dashboard onNavigate={navigate} lastAnalysis={lastAnalysis} bulkResult={bulkResult} />,
     analyze: <AnalyzeReport onAnalysis={setLastAnalysis} />,
     bulk: <BulkAnalysis onResults={setBulkResult} onNavigate={navigate} />,
     analytics: <Analytics bulkResult={bulkResult} />,
+    rules: <LifeSavingRules currentAnalysis={lastAnalysis} onNavigate={navigate} />,
   }[activePage]
 
   return <div className="app-shell">
