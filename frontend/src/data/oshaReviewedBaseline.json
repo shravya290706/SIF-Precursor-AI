@@ -1,0 +1,182 @@
+{
+  "source": "Baseline derived from publicly available OSHA safety narratives with human-reviewed precursor labels.",
+  "context": "These are not OIL internal HSSE records.",
+  "reviewed_count": 340,
+  "disposition": [
+    {
+      "code": "SIF_POTENTIAL",
+      "label": "SIF Potential",
+      "count": 217
+    },
+    {
+      "code": "NOT_APPARENT",
+      "label": "Not Apparent",
+      "count": 44
+    },
+    {
+      "code": "UNCERTAIN_INSUFFICIENT_EVIDENCE",
+      "label": "Uncertain",
+      "count": 79
+    }
+  ],
+  "mechanisms": [
+    {
+      "code": "OTHER",
+      "label": "Other",
+      "count": 48
+    },
+    {
+      "code": "PRESSURE_STORED_ENERGY",
+      "label": "Pressure / stored energy",
+      "count": 47
+    },
+    {
+      "code": "CAUGHT_IN",
+      "label": "Caught-in",
+      "count": 46
+    },
+    {
+      "code": "STRUCK_BY_DROPPED_OBJECT",
+      "label": "Struck by dropped object",
+      "count": 37
+    },
+    {
+      "code": "UNKNOWN",
+      "label": "Unknown",
+      "count": 34
+    },
+    {
+      "code": "FIRE_EXPLOSION",
+      "label": "Fire / explosion",
+      "count": 32
+    },
+    {
+      "code": "ENVIRONMENTAL",
+      "label": "Environmental",
+      "count": 24
+    },
+    {
+      "code": "FALL_HEIGHT",
+      "label": "Fall from height",
+      "count": 24
+    },
+    {
+      "code": "ELECTRICAL",
+      "label": "Electrical",
+      "count": 17
+    },
+    {
+      "code": "VEHICLE_MOBILE_EQUIPMENT",
+      "label": "Vehicle / mobile equipment",
+      "count": 13
+    },
+    {
+      "code": "CONFINED_SPACE_TOXIC",
+      "label": "Confined space / toxic atmosphere",
+      "count": 10
+    },
+    {
+      "code": "CHEMICAL",
+      "label": "Chemical",
+      "count": 8
+    }
+  ],
+  "activity": [
+    {
+      "osha_id": "20251010342",
+      "event_date": "2025-10-16",
+      "event_title": "Struck by propelled, falling, or suspended object  unspecified",
+      "label": "SIF_POTENTIAL",
+      "primary_mechanism": "CAUGHT_IN",
+      "annotator_confidence": "HIGH"
+    },
+    {
+      "osha_id": "20251010318",
+      "event_date": "2025-10-15",
+      "event_title": "Caught or wedged between objects  nonrunning",
+      "label": "SIF_POTENTIAL",
+      "primary_mechanism": "CAUGHT_IN",
+      "annotator_confidence": "HIGH"
+    },
+    {
+      "osha_id": "20251010189",
+      "event_date": "2025-10-11",
+      "event_title": "Inhalation of harmful substance  single episode or single shift",
+      "label": "UNCERTAIN_INSUFFICIENT_EVIDENCE",
+      "primary_mechanism": "UNKNOWN",
+      "annotator_confidence": "LOW"
+    },
+    {
+      "osha_id": "2025109988",
+      "event_date": "2025-10-05",
+      "event_title": "Struck by propelled, falling, or suspended object  unspecified",
+      "label": "SIF_POTENTIAL",
+      "primary_mechanism": "STRUCK_BY_DROPPED_OBJECT",
+      "annotator_confidence": "HIGH"
+    },
+    {
+      "osha_id": "2025099644",
+      "event_date": "2025-09-26",
+      "event_title": "Flash fire",
+      "label": "SIF_POTENTIAL",
+      "primary_mechanism": "FIRE_EXPLOSION",
+      "annotator_confidence": "HIGH"
+    },
+    {
+      "osha_id": "2025099616",
+      "event_date": "2025-09-25",
+      "event_title": "Explosion of pressure vessel, piping, or tire",
+      "label": "SIF_POTENTIAL",
+      "primary_mechanism": "STRUCK_BY_DROPPED_OBJECT",
+      "annotator_confidence": "HIGH"
+    },
+    {
+      "osha_id": "2025088680",
+      "event_date": "2025-08-30",
+      "event_title": "Contact with hot objects or substances",
+      "label": "SIF_POTENTIAL",
+      "primary_mechanism": "PRESSURE_STORED_ENERGY",
+      "annotator_confidence": "HIGH"
+    },
+    {
+      "osha_id": "2025088677",
+      "event_date": "2025-08-29",
+      "event_title": "Contact with hot objects or substances",
+      "label": "SIF_POTENTIAL",
+      "primary_mechanism": "PRESSURE_STORED_ENERGY",
+      "annotator_confidence": "HIGH"
+    },
+    {
+      "osha_id": "2025088501",
+      "event_date": "2025-08-26",
+      "event_title": "Struck by running powered equipment  n.e.c.",
+      "label": "SIF_POTENTIAL",
+      "primary_mechanism": "CAUGHT_IN",
+      "annotator_confidence": "HIGH"
+    },
+    {
+      "osha_id": "2025088431",
+      "event_date": "2025-08-23",
+      "event_title": "Nonroadway noncollision  vehicle overturn",
+      "label": "SIF_POTENTIAL",
+      "primary_mechanism": "PRESSURE_STORED_ENERGY",
+      "annotator_confidence": "HIGH"
+    },
+    {
+      "osha_id": "2025088262",
+      "event_date": "2025-08-19",
+      "event_title": "Nonroadway noncollision  vehicle overturn",
+      "label": "UNCERTAIN_INSUFFICIENT_EVIDENCE",
+      "primary_mechanism": "UNKNOWN",
+      "annotator_confidence": "LOW"
+    },
+    {
+      "osha_id": "2025087910",
+      "event_date": "2025-08-11",
+      "event_title": "Struck against stationary object  n.e.c.",
+      "label": "NOT_APPARENT",
+      "primary_mechanism": "OTHER",
+      "annotator_confidence": "HIGH"
+    }
+  ]
+}

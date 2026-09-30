@@ -1,39 +1,44 @@
 import { BarDistribution, PredictionChart } from '../components/Charts'
 import MetricCard from '../components/MetricCard'
-import { getPriority } from '../services/reviewPriority'
+import baseline from '../data/oshaReviewedBaseline.json'
 
-const initialDistribution = []
-const initialPrecursor = []
+const disposition = baseline.disposition.map((item) => ({ name: item.label, value: item.count }))
+const mechanisms = baseline.mechanisms.map((item) => ({ name: item.label, value: item.count }))
+const dispositionColors = { 'SIF Potential': '#f18b42', 'Not Apparent': '#2fa89d', Uncertain: '#efc658' }
 
-function countTerms(reports) {
-  const groups = [
-    { name: 'Line of fire', terms: ['caught', 'struck', 'between', 'falling'] },
-    { name: 'Stored energy', terms: ['pressure', 'hose', 'valve', 'hydraulic'] },
-    { name: 'Electrical', terms: ['electric', 'arc'] },
-    { name: 'Falls', terms: ['fall'] },
-    { name: 'Vehicle / mobile', terms: ['vehicle', 'truck'] },
-  ]
-  const terms = reports.flatMap((report) => report.evidence || []).map((item) => item.term.toLowerCase())
-  return groups.map((group) => ({ name: group.name, value: terms.filter((term) => group.terms.some((match) => term.includes(match))).length })).filter((group) => group.value)
+function labelFor(code) {
+  return baseline.disposition.find((item) => item.code === code)?.label || code.replaceAll('_', ' ')
 }
 
-function Dashboard({ onNavigate, lastAnalysis, bulkResult }) {
-  const isLive = Boolean(bulkResult)
-  const reports = bulkResult?.analyzed_reports || []
-  const recent = isLive ? reports.slice(0, 4).map((report, index) => ({ ...report, id: report.osha_id || `REPORT-${index + 1}`, title: report.event_title || 'Narrative report' })) : []
-  const distribution = isLive ? [{ name: 'SIF potential', value: bulkResult.sif_potential_count }, { name: 'Not apparent', value: bulkResult.not_apparent_count }] : initialDistribution
-  const precursor = isLive && countTerms(reports).length ? countTerms(reports) : initialPrecursor
-  const sifCount = isLive ? bulkResult.sif_potential_count : '\u2014'
-  const notCount = isLive ? bulkResult.not_apparent_count : '\u2014'
-  const total = isLive ? bulkResult.total_reports : '\u2014'
-  const average = isLive ? `${(bulkResult.average_probability * 100).toFixed(1)}%` : '\u2014'
+function formatDate(value) {
+  return new Date(value + 'T00:00:00').toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+}
 
+function Dashboard({ onNavigate, analysisHistory = [] }) {
+  const baselineActivity = baseline.activity.slice(0, 6)
   return <>
-    <div className="page-heading command-hero"><div><p className="eyebrow">OIL safety intelligence / command center</p><h1>See the signal before it becomes a pattern.</h1><p>AI-powered analysis of unsafe-act, unsafe-condition and near-miss narratives for focused HSE review.</p></div><div className="heading-aside hero-readout"><p className="eyebrow">Review context</p><strong>{isLive ? 'Current safety overview' : 'Safety intelligence overview'}</strong><span className="metric-foot">{isLive ? 'Latest uploaded analysis' : 'Priority review workspace'}</span></div></div>
-    <div className="metric-grid"><MetricCard label="Reports analyzed" value={total} foot={isLive ? 'Latest CSV response' : 'Run an analysis to begin'} /><MetricCard label="SIF-potential reports" value={sifCount} foot="Prioritize for HSE review" accent="accent-orange" /><MetricCard label="Not apparent" value={notCount} foot="No clear signal" accent="accent-yellow" /><MetricCard label="Average SIF probability" value={average} foot={isLive ? 'Model probability average' : 'Based on analyzed reports'} accent="accent-red" /></div>
-    <div className="content-grid"><section className="panel"><div className="panel-header"><div><p className="eyebrow">Activity stream</p><h2>{isLive ? 'Recent review queue' : 'Recent analysis'}</h2><p>{isLive ? 'Latest rows from the uploaded response' : 'Recent reports in the current safety intelligence view'}</p></div><button type="button" className="secondary-button" onClick={() => onNavigate('analyze')}>New analysis ↗</button></div><div className="panel-body"><div className="recent-list">{!isLive && !lastAnalysis && <div className="empty-state">Analyze a report or upload a CSV to populate this review view.</div>}{lastAnalysis && <div className="recent-row"><div><div className="recent-title">Latest submitted narrative</div><div className="recent-caption">Live result from Analyze Report</div></div><span className={`pill ${lastAnalysis.prediction === 'SIF_POTENTIAL' ? 'sif' : 'not'}`}>{lastAnalysis.prediction}</span><span className="probability">{(lastAnalysis.probability * 100).toFixed(1)}%</span></div>}{recent.map((item, index) => <div className="recent-row" key={`${item.id}-${index}`}><div><div className="recent-title">{item.title}</div><div className="recent-caption">{item.id}{isLive ? ' · Live result' : ' · Recent record'}</div></div><span className={`pill ${item.prediction === 'SIF_POTENTIAL' ? 'sif' : 'not'}`}>{item.prediction === 'SIF_POTENTIAL' ? 'SIF potential' : 'Not apparent'}</span><span className="probability">{(item.probability * 100).toFixed(1)}%</span></div>)}</div></div></section><section className="panel"><div className="panel-header"><div><p className="eyebrow">Signal mix</p><h2>SIF precursor overview</h2></div></div><div className="panel-body"><PredictionChart data={distribution} /><div className="chart-legend"><span><i className="legend-dot" style={{ background: '#f18b42' }} />SIF potential</span><span><i className="legend-dot" style={{ background: '#2fa89d' }} />Not apparent</span></div></div></section></div>
-    <section className="panel" style={{ marginTop: 16 }}><div className="panel-header"><div><p className="eyebrow">Pattern lens</p><h2>Precursor category frequency</h2><p>{isLive ? 'Derived from returned evidence terms' : 'Current precursor category distribution'}</p></div><button type="button" className="secondary-button" onClick={() => onNavigate('analytics')}>View analytics ↗</button></div><div className="panel-body"><div className="chart-wrap tall"><BarDistribution data={precursor} color="#2fa89d" /></div></div></section>
-    {isLive && <section className="panel review-queue-panel"><div className="panel-header"><div><p className="eyebrow">Priority lens</p><h2>HSE review queue</h2><p>Review priority based on model probability thresholds.</p></div></div><div className="panel-body queue-grid">{reports.filter((report) => report.prediction === 'SIF_POTENTIAL').slice(0, 4).map((report, index) => <div className="queue-card" key={`${report.osha_id || 'report'}-${index}`}><span className={`priority-badge priority-${getPriority(report.prediction, report.probability).toLowerCase()}`}>{getPriority(report.prediction, report.probability)}</span><strong>{report.osha_id || 'Report'}</strong><span>{(report.probability * 100).toFixed(1)}% model probability</span></div>)}</div></section>}
+    <div className="page-heading command-hero">
+      <div><p className="eyebrow">OIL safety intelligence / command center</p><h1>See the signal before it becomes a pattern.</h1><p>AI-assisted analysis of safety narratives for focused HSE review.</p></div>
+      <div className="heading-aside hero-readout"><p className="eyebrow">Baseline</p><strong>Human-reviewed OSHA narratives</strong><span className="metric-foot">{baseline.reviewed_count} reviewed records</span></div>
+    </div>
+    <div className="metric-grid">
+      <MetricCard label="Reviewed reports" value={baseline.reviewed_count} foot="Human-reviewed precursor labels" />
+      <MetricCard label="SIF Potential" value={baseline.disposition[0].count} foot="Human-reviewed label count" accent="accent-orange" />
+      <MetricCard label="Not Apparent" value={baseline.disposition[1].count} foot="Human-reviewed label count" accent="accent-teal" />
+      <MetricCard label="Uncertain" value={baseline.disposition[2].count} foot="Insufficient evidence" accent="accent-yellow" />
+    </div>
+    <div className="analytics-note baseline-note"><strong>{baseline.source}</strong> These are human-reviewed label counts, not model predictions or observed injury outcomes. {baseline.context}</div>
+    <div className="content-grid">
+      <section className="panel">
+        <div className="panel-header"><div><p className="eyebrow">Activity stream</p><h2>Recent analysis and reviewed reports</h2><p>Model-generated results remain separate from the reviewed baseline.</p></div><button type="button" className="secondary-button" onClick={() => onNavigate('analyze')}>New analysis &#8599;</button></div>
+        <div className="panel-body">
+          {analysisHistory.length > 0 && <div className="activity-group"><p className="activity-group-label">Recent model analysis</p><div className="recent-list">{analysisHistory.slice(0, 5).map((item) => <div className="recent-row" key={item.id}><div><div className="recent-title">{item.kind === 'bulk' ? 'Bulk analysis row ' + item.rowNumber : 'Individual report analysis'}</div><div className="recent-caption">{item.createdAt ? new Date(item.createdAt).toLocaleString() : 'Saved analysis result'} ? Model output</div></div><span className={'pill ' + (item.prediction === 'SIF_POTENTIAL' ? 'sif' : 'not')}>{labelFor(item.prediction)}</span><span className="probability">{(item.probability * 100).toFixed(1)}%</span></div>)}</div></div>}
+          <div className="activity-group"><p className="activity-group-label">Human-reviewed OSHA records</p><div className="recent-list">{baselineActivity.map((item) => <div className="recent-row" key={item.osha_id}><div><div className="recent-title">{item.event_title}</div><div className="recent-caption">OSHA {item.osha_id} ? {formatDate(item.event_date)} ? Human-reviewed</div></div><span className={'pill ' + (item.label === 'SIF_POTENTIAL' ? 'sif' : item.label === 'NOT_APPARENT' ? 'not' : 'uncertain')}>{labelFor(item.label)}</span><span className="mechanism-caption">{baseline.mechanisms.find((mechanism) => mechanism.code === item.primary_mechanism)?.label || 'Other'}</span></div>)}</div></div>
+        </div>
+      </section>
+      <section className="panel"><div className="panel-header"><div><p className="eyebrow">Reviewed disposition</p><h2>Human-reviewed labels</h2></div></div><div className="panel-body"><PredictionChart data={disposition} /><div className="chart-legend">{disposition.map((item) => <span key={item.name}><i className="legend-dot" style={{ background: dispositionColors[item.name] }} />{item.name}</span>)}</div></div></section>
+    </div>
+    <section className="panel" style={{ marginTop: 16 }}><div className="panel-header"><div><p className="eyebrow">Precursor signals</p><h2>Primary mechanism frequency</h2><p>Human-reviewed primary mechanism labels across {baseline.reviewed_count} reports.</p></div></div><div className="panel-body"><div className="chart-wrap tall"><BarDistribution data={mechanisms} color="#2fa89d" /></div></div></section>
   </>
 }
 

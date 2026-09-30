@@ -6,6 +6,7 @@ import BulkAnalysis from './pages/BulkAnalysis'
 import Analytics from './pages/Analytics'
 import LifeSavingRules from './pages/LifeSavingRules'
 import Login from './pages/Login'
+import { createBulkAnalysisEntries, createSingleAnalysisEntry, mergeAnalysisHistory, readAnalysisHistory } from './services/analysisHistory'
 
 const AUTH_SESSION_KEY = 'sif_auth_session'
 const navigation = [
@@ -53,7 +54,23 @@ function App() {
   const [activePage, setActivePage] = useState(() => (hasAuthSession() ? 'dashboard' : 'login'))
   const [bulkResult, setBulkResult] = useState(null)
   const [lastAnalysis, setLastAnalysis] = useState(null)
+  const [analysisHistory, setAnalysisHistory] = useState(() => readAnalysisHistory())
   const [loginError, setLoginError] = useState('')
+
+  const rememberAnalysis = (entries) => {
+    setAnalysisHistory((current) => mergeAnalysisHistory(current, entries))
+  }
+
+  const handleSingleAnalysis = (result) => {
+    setLastAnalysis(result)
+    const entry = createSingleAnalysisEntry(result)
+    if (entry) rememberAnalysis([entry])
+  }
+
+  const handleBulkAnalysis = (result) => {
+    setBulkResult(result)
+    rememberAnalysis(createBulkAnalysisEntries(result))
+  }
 
   useEffect(() => {
     const syncCurrentRoute = () => {
@@ -119,9 +136,9 @@ function App() {
   }
 
   const page = {
-    dashboard: <Dashboard onNavigate={navigate} lastAnalysis={lastAnalysis} bulkResult={bulkResult} />,
-    analyze: <AnalyzeReport onAnalysis={setLastAnalysis} />,
-    bulk: <BulkAnalysis onResults={setBulkResult} onNavigate={navigate} />,
+    dashboard: <Dashboard onNavigate={navigate} analysisHistory={analysisHistory} />,
+    analyze: <AnalyzeReport onAnalysis={handleSingleAnalysis} />,
+    bulk: <BulkAnalysis onResults={handleBulkAnalysis} onNavigate={navigate} />,
     analytics: <Analytics bulkResult={bulkResult} />,
     rules: <LifeSavingRules currentAnalysis={lastAnalysis} onNavigate={navigate} />,
   }[activePage]
